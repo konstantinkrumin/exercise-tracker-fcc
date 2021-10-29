@@ -28,7 +28,6 @@ const userSchema = new Schema({
 const User = mongoose.model('user', userSchema);
 
 const createAndSaveUser = (username) => {
-  // TODO: might need to check whether a user exists first
   const user = new User({
     username: username,
   });
@@ -95,7 +94,39 @@ const createAndSaveExercise = (data) => {
       return exercise.save();
     })
     .then((savedExerciseObj) => {
-      return savedExerciseObj;
+      return {
+        username: savedExerciseObj.username,
+        description: savedExerciseObj.description,
+        duration: savedExerciseObj.duration,
+        date: savedExerciseObj.date,
+        _id: savedExerciseObj.userId,
+      };
+    })
+    .catch((err) => {
+      return { error: err };
+    });
+};
+
+const retrieveExercisesLog = (userId) => {
+  return Exercise.find({ userId: userId })
+    .then((exercises) => {
+      const count = exercises.length;
+
+      if (count === 0) throw new Error('No exercises in the log under this userId');
+
+      const log = exercises.map((exercise) => {
+        return {
+          description: exercise.description,
+          duration: exercise.duration,
+          date: exercise.date,
+        };
+      });
+      return {
+        username: exercises[0].username,
+        _id: exercises[0].userId,
+        count: count,
+        log: log,
+      };
     })
     .catch((err) => {
       return { error: err };
@@ -131,7 +162,8 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   const _id = req.params._id;
   const { description, duration, date } = req.body;
 
-  const data = { _id, description, duration, date };
+  const formattedDate = !date ? new Date() : new Date(date);
+  const data = { _id, description, duration, date: formattedDate };
 
   createAndSaveExercise(data)
     .then((result) => {
@@ -143,7 +175,14 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 });
 
 app.get('/api/users/:_id/logs', (req, res) => {
-  res.json({ TEST: 'GET /api/users/:_id/logs works' });
+  const userId = req.params._id;
+  retrieveExercisesLog(userId)
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
