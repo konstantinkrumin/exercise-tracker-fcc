@@ -56,6 +56,53 @@ const findAllUsers = () => {
     });
 };
 
+const exerciseSchema = new Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  duration: {
+    type: Number,
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: false,
+  },
+});
+
+const Exercise = mongoose.model('exercise', exerciseSchema);
+
+const createAndSaveExercise = (data) => {
+  return User.findById(data._id)
+    .then((user) => {
+      return { user: user };
+    })
+    .catch((err) => {
+      return { error: err };
+    });
+
+  // const exercise = new Exercise({
+  //   // username: data.username,
+  //   description: data.description,
+  //   duration: data.duration,
+  //   date: data.date,
+  // });
+
+  // return exercise
+  //   .save()
+  //   .then((savedObj) => {
+  //     return savedObj;
+  //   })
+  //   .catch((err) => {
+  //     return { error: err };
+  //   });
+};
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
@@ -72,7 +119,6 @@ app.post('/api/users', (req, res) => {
 });
 
 app.get('/api/users', (req, res) => {
-  // res.json({ TEST: 'GET /api/users works' });
   findAllUsers()
     .then((result) => {
       return res.json(result);
@@ -83,7 +129,18 @@ app.get('/api/users', (req, res) => {
 });
 
 app.post('/api/users/:_id/exercises', (req, res) => {
-  res.json({ TEST: 'POST /api/users/:_id/exercises works' });
+  const _id = req.params._id;
+  const { description, duration, date } = req.body;
+
+  const data = { _id, description, duration, date };
+
+  createAndSaveExercise(data)
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 app.get('/api/users/:_id/logs', (req, res) => {
