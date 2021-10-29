@@ -98,7 +98,7 @@ const createAndSaveExercise = (data) => {
         username: savedExerciseObj.username,
         description: savedExerciseObj.description,
         duration: savedExerciseObj.duration,
-        date: savedExerciseObj.date,
+        date: savedExerciseObj.date.toDateString(),
         _id: savedExerciseObj.userId,
       };
     })
@@ -118,7 +118,7 @@ const retrieveExercisesLog = (userId) => {
         return {
           description: exercise.description,
           duration: exercise.duration,
-          date: exercise.date,
+          date: exercise.date.toDateString(),
         };
       });
       return {
