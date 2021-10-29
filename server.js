@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const app = express();
 
-mongoose.connect(process.ENV['MONGO_URI'], {
+mongoose.connect(process.env['MONGO_URI'], {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -18,6 +18,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/api/users', (req, res) => {
+  res.json({ TEST: 'GET /api/users works' });
+});
+
+app.post('/api/users', (req, res) => {
+  res.json({ TEST: 'POST /api/users/:username works' });
+});
+
+app.post('/api/users/:_id/exercises', (req, res) => {
+  res.json({ TEST: 'POST /api/users/:_id/exercises works' });
+});
+
+app.get('/api/users/:_id/logs', (req, res) => {
+  res.json({ TEST: 'GET /api/users/:_id/logs works' });
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
