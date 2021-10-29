@@ -7,14 +7,41 @@ require('dotenv').config();
 
 const app = express();
 
+app.use(cors());
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
+
 mongoose.connect(process.env['MONGO_URI'], {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-app.use(cors());
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: false }));
+const { Schema } = mongoose;
+
+const userSchema = new Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+});
+
+const User = mongoose.model('user', userSchema);
+
+const createAndSaveUser = (username) => {
+  // TODO: might need to check whether a user exists first
+  const user = new User({
+    username: username,
+  });
+
+  return user
+    .save()
+    .then((savedUserObj) => {
+      return { username: savedUserObj.username, _id: savedUserObj._id };
+    })
+    .catch((err) => {
+      return { error: err };
+    });
+};
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
@@ -25,7 +52,14 @@ app.get('/api/users', (req, res) => {
 });
 
 app.post('/api/users', (req, res) => {
-  res.json({ TEST: 'POST /api/users/:username works' });
+  const username = req.body.username;
+  createAndSaveUser(username)
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 app.post('/api/users/:_id/exercises', (req, res) => {
