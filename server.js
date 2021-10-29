@@ -107,8 +107,19 @@ const createAndSaveExercise = (data) => {
     });
 };
 
-const retrieveExercisesLog = (userId) => {
-  return Exercise.find({ userId: userId })
+const dateQueryParams = (queryObj) => {
+  let dateObj = {};
+
+  if (queryObj.from) dateObj = { ...dateObj, $gte: queryObj.from };
+  if (queryObj.to) dateObj = { ...dateObj, $lte: queryObj.to };
+
+  return dateObj;
+};
+
+const retrieveExercisesLog = (userId, queryParams) => {
+  const dateQuerySettings = dateQueryParams(queryParams);
+
+  return Exercise.find({ userId: userId, date: dateQuerySettings })
     .then((exercises) => {
       const count = exercises.length;
 
@@ -176,7 +187,15 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
 app.get('/api/users/:_id/logs', (req, res) => {
   const userId = req.params._id;
-  retrieveExercisesLog(userId)
+  let { from, to, limit } = req.query;
+
+  if (to) to = new Date(to);
+  if (from) from = new Date(from);
+  if (limit) limit = parseInt(limit);
+
+  const queryParams = { from, to, limit };
+
+  retrieveExercisesLog(userId, queryParams)
     .then((result) => {
       return res.json(result);
     })
