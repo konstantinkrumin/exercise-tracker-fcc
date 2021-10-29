@@ -118,12 +118,12 @@ const dateQueryParams = (queryObj) => {
 
 const retrieveExercisesLog = (userId, queryParams) => {
   const dateQuerySettings = dateQueryParams(queryParams);
+  const dateQuery = Object.keys(dateQuerySettings).length > 0 ? dateQuerySettings : null;
 
-  return Exercise.find({ userId: userId, date: dateQuerySettings })
+  return Exercise.find({ userId: userId, date: dateQuery })
+    .limit(queryParams.limit)
     .then((exercises) => {
       const count = exercises.length;
-
-      if (count === 0) throw new Error('No exercises in the log under this userId');
 
       const log = exercises.map((exercise) => {
         return {
@@ -132,9 +132,11 @@ const retrieveExercisesLog = (userId, queryParams) => {
           date: exercise.date.toDateString(),
         };
       });
+
       return {
-        username: exercises[0].username,
-        _id: exercises[0].userId,
+        // username: exercises[0].username,
+        // _id: exercises[0].userId,
+        _id: userId,
         count: count,
         log: log,
       };
