@@ -43,17 +43,37 @@ const createAndSaveUser = (username) => {
     });
 };
 
+const findAllUsers = () => {
+  return User.find({})
+    .then((users) => {
+      const modifiedUsersArr = users.map((user) => {
+        return { _id: user._id, username: user.username };
+      });
+      return modifiedUsersArr;
+    })
+    .catch((err) => {
+      return { error: err };
+    });
+};
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
-});
-
-app.get('/api/users', (req, res) => {
-  res.json({ TEST: 'GET /api/users works' });
 });
 
 app.post('/api/users', (req, res) => {
   const username = req.body.username;
   createAndSaveUser(username)
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get('/api/users', (req, res) => {
+  // res.json({ TEST: 'GET /api/users works' });
+  findAllUsers()
     .then((result) => {
       return res.json(result);
     })
