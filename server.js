@@ -57,6 +57,10 @@ const findAllUsers = () => {
 };
 
 const exerciseSchema = new Schema({
+  userId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
   username: {
     type: String,
     required: true,
@@ -80,27 +84,22 @@ const Exercise = mongoose.model('exercise', exerciseSchema);
 const createAndSaveExercise = (data) => {
   return User.findById(data._id)
     .then((user) => {
-      return { user: user };
+      const exercise = new Exercise({
+        userId: user._id,
+        username: user.username,
+        description: data.description,
+        duration: data.duration,
+        date: data.date,
+      });
+
+      return exercise.save();
+    })
+    .then((savedExerciseObj) => {
+      return savedExerciseObj;
     })
     .catch((err) => {
       return { error: err };
     });
-
-  // const exercise = new Exercise({
-  //   // username: data.username,
-  //   description: data.description,
-  //   duration: data.duration,
-  //   date: data.date,
-  // });
-
-  // return exercise
-  //   .save()
-  //   .then((savedObj) => {
-  //     return savedObj;
-  //   })
-  //   .catch((err) => {
-  //     return { error: err };
-  //   });
 };
 
 app.get('/', (req, res) => {
