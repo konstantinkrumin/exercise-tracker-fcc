@@ -118,13 +118,13 @@ const dateQueryParams = (queryObj) => {
 
 const retrieveExercisesLog = (userId, queryParams) => {
   const dateQuerySettings = dateQueryParams(queryParams);
-  const dateQuery = Object.keys(dateQuerySettings).length > 0 ? dateQuerySettings : null;
+  const query = Object.keys(dateQuerySettings).length > 0 ? { userId: userId, date: dateQuerySettings } : { userId: userId };
 
   let username;
   let count;
   let log;
 
-  return Exercise.find({ userId: userId, date: dateQuery })
+  return Exercise.find(query)
     .limit(queryParams.limit)
     .then((exercises) => {
       count = exercises.length;
@@ -157,43 +157,6 @@ const retrieveExercisesLog = (userId, queryParams) => {
     .catch((err) => {
       return { error: err };
     });
-
-  // return Exercise.find({ userId: userId, date: dateQuery })
-  //   .limit(queryParams.limit)
-  //   .then((exercises) => {
-  //     const count = exercises.length;
-
-  //     let username;
-  //     if (count === 0) {
-  //       User.findById(userId)
-  //         .then((user) => {
-  //           username = user.username;
-  //         })
-  //         .catch((err) => {
-  //           console.log(err);
-  //         });
-  //     }
-
-  //     const log = exercises.map((exercise) => {
-  //       return {
-  //         description: exercise.description,
-  //         duration: exercise.duration,
-  //         date: exercise.date.toDateString(),
-  //       };
-  //     });
-
-  //     return {
-  //       // username: exercises[0].username,
-  //       // _id: exercises[0].userId,
-  //       username: username,
-  //       _id: userId,
-  //       count: count,
-  //       log: log,
-  //     };
-  //   })
-  //   .catch((err) => {
-  //     return { error: err };
-  //   });
 };
 
 app.get('/', (req, res) => {
