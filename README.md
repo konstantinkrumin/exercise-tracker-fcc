@@ -2,12 +2,12 @@
 
 Stack: **Javascript**, **Node.JS**, **Express**, **MongoDB**, **Mongoose**
 
-| API                        | HTTP Method | Description                                            | Query Params |
-| -------------------------- | ----------- | ------------------------------------------------------ | ------------ |
+| API                        | HTTP Method | Description                                            | Query Params                   |
+| -------------------------- | ----------- | ------------------------------------------------------ | ------------------------------ |
 | /                          | GET         | shows main page                                        |
 | /api/users                 | POST        | adds a new user to the database                        |
 | /api/users                 | GET         | shows all users                                        |
 | /api/users/:\_id/exercises | POST        | adds a new exercise entry related to a particular user |
-| /api/users/:\_id/logs      | GET         | shows the log of a user's exercises                    |
+| /api/users/:\_id/logs      | GET         | shows the log of a user's exercises                    | from=DATE to=DATE limit=NUMBER |
 
 ![App Image](https://i.imgur.com/mWbBZZv.png)
