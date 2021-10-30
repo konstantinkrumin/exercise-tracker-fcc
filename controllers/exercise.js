@@ -1,7 +1,5 @@
 const User = require('../models/user');
 const Exercise = require('../models/exercise');
-
-// const dateQueryParams = require('../utils/dateQueryParams');
 const dateUtil = require('../utils/dateQueryParams');
 
 exports.createAndSaveExercise = (data) => {
